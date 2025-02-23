@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'bookshelf',
     'relationship_app'
     ]
-
+LOGIN_REDIRECT_URL = 'list_books'  # Redirect users after login
+LOGOUT_REDIRECT_URL = 'login'  # Redirect users to login page after logout
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
