@@ -52,25 +52,27 @@ def register(request):
 
 
 
-def is_admin(user):
+from django.contrib.auth.decorators import user_passes_test
+from django.http import HttpResponse
+
+def admin_check(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
 
-@user_passes_test(is_admin)
-def admin_view(request):
-    return render(request, 'relationship_app/admin_dashboard.html')
-
-
-def is_librarian(user):
+def librarian_check(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
 
-@user_passes_test(is_librarian)
-def librarian_view(request):
-    return render(request, 'relationship_app/librarian_dashboard.html')
-
-
-def is_member(user):
+def member_check(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
 
-@user_passes_test(is_member)
+@user_passes_test(admin_check)
+def admin_view(request):
+    return HttpResponse("Welcome to the Admin View")  # No rendering, plain text response
+
+@user_passes_test(librarian_check)
+def librarian_view(request):
+    return HttpResponse("Welcome to the Librarian View")  # No rendering, plain text response
+
+@user_passes_test(member_check)
 def member_view(request):
-    return render(request, 'relationship_app/member_dashboard.html')
+    return HttpResponse("Welcome to the Member View")  # No rendering, plain text response
+
