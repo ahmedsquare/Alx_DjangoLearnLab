@@ -3,8 +3,8 @@ from .views import list_books, LibraryDetailView
 from django.contrib.auth.views import LoginView, LogoutView
 from . import views
 from .admin_view import admin_view  # Import from the correct file
-from .views import librarian_view
-from .views import member_view 
+from .librarian_view import librarian_view
+from .member_view import member_view 
 
 
 urlpatterns = [

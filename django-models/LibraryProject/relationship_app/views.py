@@ -49,27 +49,3 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'relationship_app/register.html', {'form': form})
-
-
-
-from django.contrib.auth.decorators import user_passes_test
-from django.http import HttpResponse
-
-
-
-def librarian_check(user):
-    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
-
-def member_check(user):
-    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
-
-
-
-@user_passes_test(librarian_check)
-def librarian_view(request):
-    return HttpResponse("Welcome to the Librarian View")  # No rendering, plain text response
-
-@user_passes_test(member_check)
-def member_view(request):
-    return HttpResponse("Welcome to the Member View")  # No rendering, plain text response
-
