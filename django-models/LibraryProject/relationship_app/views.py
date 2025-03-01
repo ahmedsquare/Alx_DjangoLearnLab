@@ -39,7 +39,7 @@ def user_logout(request):
     return redirect('login')
 
 # User Registration View
-def user_register(request):
+def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
