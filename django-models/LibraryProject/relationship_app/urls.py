@@ -6,6 +6,8 @@ from .views import admin_view  # Import from the correct file
 from .views import librarian_view
 from .views import member_view 
 from .views import add_book
+from .views import edit_book
+from .views import delete_book
 
 
 urlpatterns = [
@@ -18,5 +20,6 @@ urlpatterns = [
     path('librarian_view/', librarian_view, name='librarian_view'),
     path('member_view/', member_view, name='member_view'),
     path('books/add/', add_book, name='add_book'),
-
+    path('books/edit/<int:book_id>/', edit_book, name='edit_book'),
+    path('books/delete/<int:book_id>/', delete_book, name='delete_book'), 
 ]
