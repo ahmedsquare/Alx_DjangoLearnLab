@@ -2,11 +2,15 @@ from django.shortcuts import render, redirect
 from django.views.generic.detail import DetailView
 from .models import Book  # Ensure Library is imported
 from .models import Library
+from .models import Author
+from .forms import BookForm  # Import the form
+
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import permission_required
 
 # Function-based view to list all books
 def list_books(request):
@@ -75,3 +79,15 @@ def librarian_view(request):
 @user_passes_test(is_member, login_url='/login/')
 def member_view(request):
     return render(request, "relationship_app/member_view.html")
+
+
+def add_book(request):
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            form.save()  # Save the book with user input
+            return redirect('list_books')  # Redirect to book list after adding
+    else:
+        form = BookForm()
+
+    return render(request, 'relationship_app/add_book.html', {'form': form})
