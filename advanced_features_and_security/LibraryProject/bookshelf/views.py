@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import permission_required, login_required
 from django.http import HttpResponseForbidden
 from .models import Book
+from django.db.models import Q
 
 @login_required
 @permission_required('bookshelf.can_view', raise_exception=True)
@@ -38,3 +39,15 @@ def book_delete(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     book.delete()
     return render(request, 'books/book_deleted.html')
+
+
+def search_books(request):
+    query = request.GET.get('q', '')
+    
+    # Validate input to prevent SQL injection
+    if not query.isalnum():
+        query = ''
+
+    books = Book.objects.filter(Q(title__icontains=query) | Q(author__icontains=query))
+
+    return render(request, 'bookshelf/book_list.html', {'books': books})

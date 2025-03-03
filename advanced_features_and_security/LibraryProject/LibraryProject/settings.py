@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 LOGIN_REDIRECT_URL = 'list_books'  # Redirect users after login
 LOGOUT_REDIRECT_URL = 'login'  # Redirect users to login page after logout
 MIDDLEWARE = [
+    'csp.middleware.CSPMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -64,6 +65,7 @@ TEMPLATES = [
         'APP_DIRS': True,  # Enables template discovery in each app's "templates" folder
         'OPTIONS': {
             'context_processors': [
+                
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -135,3 +137,21 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "bookshelf.CustomUser"  # No direct import
+
+
+# Security settings
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Ensure secure cookies
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True  # Redirect all HTTP requests to HTTPS
+
+DEBUG = False  # Ensure this is False in production
+
+
+CSP_DEFAULT_SRC = ("'self'",)  # Only allow loading scripts from your own domain
+CSP_SCRIPT_SRC = ("'self'", "https://trusted-cdn.com")  # Allow external scripts from a trusted CDN
+CSP_STYLE_SRC = ("'self'", "https://trusted-cdn.com")
