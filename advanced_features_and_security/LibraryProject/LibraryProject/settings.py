@@ -147,7 +147,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 # Ensure secure cookies
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = False  # Redirect all HTTP requests to HTTPS
+SECURE_SSL_REDIRECT = True  # Redirect all HTTP requests to HTTPS
 
 DEBUG = True  # Ensure this is False in production
 
@@ -160,3 +160,5 @@ CSP_STYLE_SRC = ("'self'", "https://trusted-cdn.com")
 SECURE_HSTS_SECONDS = 31536000  # 1 year (recommended)
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Apply to subdomains
 SECURE_HSTS_PRELOAD = True  # Enable HSTS preload list
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
