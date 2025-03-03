@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-@$5w&n5#gi2ic17sxg*4k+seje6r!ts(0u9i+at=+rkfwr@jv$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['e6d3-197-133-215-71.ngrok-free.app', 'localhost', '127.0.0.1']  # Allow local development
 
 
 # Application definition
@@ -138,7 +138,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "bookshelf.CustomUser"  # No direct import
 
-
+CSRF_TRUSTED_ORIGINS = ['https://e6d3-197-133-215-71.ngrok-free.app']
 # Security settings
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = 'DENY'
@@ -147,9 +147,9 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 # Ensure secure cookies
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True  # Redirect all HTTP requests to HTTPS
+SECURE_SSL_REDIRECT = False  # Redirect all HTTP requests to HTTPS
 
-DEBUG = False  # Ensure this is False in production
+DEBUG = True  # Ensure this is False in production
 
 
 CSP_DEFAULT_SRC = ("'self'",)  # Only allow loading scripts from your own domain
