@@ -1,8 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import permission_required, login_required
-from django.http import HttpResponseForbidden
 from .models import Book
-from django.db.models import Q
+from .forms import ExampleForm
 
 @login_required
 @permission_required('bookshelf.can_view', raise_exception=True)
@@ -41,13 +40,14 @@ def book_delete(request, book_id):
     return render(request, 'books/book_deleted.html')
 
 
-def search_books(request):
-    query = request.GET.get('q', '')
-    
-    # Validate input to prevent SQL injection
-    if not query.isalnum():
-        query = ''
 
-    books = Book.objects.filter(Q(title__icontains=query) | Q(author__icontains=query))
+def example_form_view(request):
+    if request.method == "POST":
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            # Process the form data (e.g., save to the database, send an email, etc.)
+            return render(request, 'bookshelf/form_success.html', {'form': form})
+    else:
+        form = ExampleForm()
 
-    return render(request, 'bookshelf/book_list.html', {'books': books})
+    return render(request, 'bookshelf/form_example.html', {'form': form})
