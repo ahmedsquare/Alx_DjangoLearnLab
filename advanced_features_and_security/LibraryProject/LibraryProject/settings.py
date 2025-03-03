@@ -155,3 +155,8 @@ DEBUG = True  # Ensure this is False in production
 CSP_DEFAULT_SRC = ("'self'",)  # Only allow loading scripts from your own domain
 CSP_SCRIPT_SRC = ("'self'", "https://trusted-cdn.com")  # Allow external scripts from a trusted CDN
 CSP_STYLE_SRC = ("'self'", "https://trusted-cdn.com")
+
+# Security settings
+SECURE_HSTS_SECONDS = 31536000  # 1 year (recommended)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Apply to subdomains
+SECURE_HSTS_PRELOAD = True  # Enable HSTS preload list
