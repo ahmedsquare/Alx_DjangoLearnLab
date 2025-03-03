@@ -3,6 +3,13 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 class Book(models.Model):
+    class Meta:
+        permissions = [
+            ("can_view", "Can view book"),
+            ("can_create", "Can create book"),
+            ("can_edit", "Can edit book"),
+            ("can_delete", "Can delete book"),
+        ]
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=100)
     publication_date  = models.DateField()
