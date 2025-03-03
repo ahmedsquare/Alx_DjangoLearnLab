@@ -1,13 +1,6 @@
 from django import forms
-from .models import Book  # Assuming you have a Book model
 
-class BookForm(forms.ModelForm):
-    class Meta:
-        model = Book
-        fields = ['title', 'author', 'description']
-
-    def clean_title(self):
-        title = self.cleaned_data.get('title')
-        if not title.isalnum():
-            raise forms.ValidationError("Title should contain only letters and numbers.")
-        return title
+class ExampleForm(forms.Form):
+    name = forms.CharField(max_length=100, required=True)
+    email = forms.EmailField(required=True)
+    message = forms.CharField(widget=forms.Textarea, required=True)
