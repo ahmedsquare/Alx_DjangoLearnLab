@@ -1,12 +1,13 @@
 from rest_framework import generics
-from .models import Book #replace with your working model
-from .serializers import BookSerializer # replace with your project's serializer
+from myapp.models import Book  # Import Book model from myapp
+from .serializers import BookSerializer
 
-class DetailView(generics.CreateAPIView):
-# can be any name, ensure to align with your project as this is sample exampls 
+# ListView: Retrieve all books (GET) & Create a new book (POST)
+class BookListCreateView(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
-class DeleteView(generics.ListAPIView):
+# DetailView + UpdateView + DeleteView: Retrieve, Update, Delete a book by ID
+class BookDetailUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
