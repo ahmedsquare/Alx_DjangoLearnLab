@@ -9,7 +9,7 @@ class Author(models.Model):
 # Create your models here.
 class Book(models.Model):
     publication_year = models.IntegerField()
-    author = models.OneToOneField(Author, on_delete=models.CASCADE)
+    author = models.ManyToManyField(Author, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
 
     def __str__(self):
