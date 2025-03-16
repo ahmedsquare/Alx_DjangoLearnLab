@@ -1,37 +1,26 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
-from api.models import Book
+from rest_framework import status
+from myapp.models import Book
 
-class BookAPITest(TestCase):
+class BookAPITestCase(TestCase):
+    """Test suite for the Book API endpoints"""
+
     def setUp(self):
-        """Set up test data and client authentication"""
+        """Set up test data and client"""
         self.client = APIClient()
-
+        
         # Create a test user
-        self.user = User.objects.create_user(username="testuser", password="testpass")
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.client.force_authenticate(user=self.user)
 
-        # Log in the user
-        self.client.login(username="testuser", password="testpass")  # ✅ Add this
+        # Create sample books
+        self.book1 = Book.objects.create(title="Django for Beginners", author="William S. Vincent", publication_year=2021)
+        self.book2 = Book.objects.create(title="Python Crash Course", author="Eric Matthes", publication_year=2019)
 
-        # Sample Book object
-        self.book = Book.objects.create(title="Django for Beginners", author="William S.", publication_year=2023)
-
-    def test_create_book_authenticated(self):
-        """Ensure authenticated users can create books"""
-        data = {"title": "New Book", "author": "Author X", "publication_year": 2024}
-        response = self.client.post("/api/books/create/", data, format="json")
-
-        self.assertEqual(response.status_code, 201)  # Expect 201 Created
-
-    def test_create_book_unauthenticated(self):
-        """Ensure unauthenticated users cannot create books"""
-        self.client.logout()  # ✅ Logout before test
-        data = {"title": "Unauthorized Book", "author": "Anonymous", "publication_year": 2024}
-        response = self.client.post("/api/books/create/", data, format="json")
-
-        self.assertEqual(response.status_code, 403)  # Expect 403 Forbidden
-
+        self.valid_data = {"title": "REST API with Django", "author": "Ahmed Ahmed", "publication_year": 2024}
+        self.invalid_data = {"title": "", "author": "No Name", "publication_year": "invalid"}
 
     def test_list_books(self):
         """Test retrieving all books"""
