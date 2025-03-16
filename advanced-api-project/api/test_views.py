@@ -1,14 +1,11 @@
-from django.test import TestCase
 from django.contrib.auth.models import User
-from rest_framework.test import APIClient
+from rest_framework.test import APITestCase
 from rest_framework import status
-from models import Book
+from api.models import Book
 
-class BookAPITest(TestCase):
+class BookAPITest(APITestCase):
     def setUp(self):
         """Set up test data and client authentication"""
-        self.client = APIClient()
-
         # Create a test user
         self.user = User.objects.create_user(username="testuser", password="testpass")
 
@@ -67,4 +64,3 @@ class BookAPITest(TestCase):
         self.client.logout()  # ✅ Logout before test
         response = self.client.delete(f"/api/books/delete/{self.book.id}/")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
