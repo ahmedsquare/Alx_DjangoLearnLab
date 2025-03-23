@@ -6,10 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post
+from .models import Post,Tag
 from .forms import CommentForm
 from .models import Comment
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 def home(request):
     return render(request, 'blog/base.html')  # Ensure 'blog/home.html' exists
@@ -181,3 +182,21 @@ class CommentDeleteView(DeleteView):
     def get_success_url(self):
         # After successful deletion, redirect to the post's detail page
         return reverse_lazy('post-detail', kwargs={'pk': self.object.post.pk})
+    
+
+
+def search_posts(request):
+    query = request.GET.get('q', '')
+    posts = Post.objects.filter(
+        Q(title__icontains=query) |
+        Q(content__icontains=query) |
+        Q(tags__name__icontains=query)
+    ).distinct()
+    return render(request, 'blog/search_results.html', {'posts': posts, 'query': query})
+
+
+
+def posts_by_tag(request, tag_name):
+    tag = Tag.objects.get(name=tag_name)
+    posts = tag.posts.all()
+    return render(request, 'blog/tagged_posts.html', {'tag': tag, 'posts': posts})
