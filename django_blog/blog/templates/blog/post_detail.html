@@ -1,14 +1,16 @@
-<form method="post">
-    {% csrf_token %}
-    {{ comment_form.as_p }}
-    <button type="submit">Post Comment</button>
-</form>
-
-<h2>Comments</h2>
 {% for comment in comments %}
     <div>
-        <p>{{ comment.author }} said:</p>
-        <p>{{ comment.content }}</p>
+        <p>{{ comment.author }}: {{ comment.text }}</p>
+        {% if comment.author == request.user %}
+            <a href="{% url 'comment-edit' pk=comment.pk %}">Edit</a>
+            <a href="{% url 'comment-delete' pk=comment.pk %}">Delete</a>
+        {% endif %}
     </div>
 {% endfor %}
 
+<h2>Add a Comment</h2>
+<form method="post" action="{% url 'comment-create' pk=post.pk %}">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit">Submit</button>
+</form>

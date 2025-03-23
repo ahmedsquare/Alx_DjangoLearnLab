@@ -143,3 +143,41 @@ def delete_comment(request, pk):
     comment.delete()
     messages.success(request, 'Comment deleted successfully!')
     return redirect('post_detail', pk=post_pk)
+
+class CommentCreateView(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/post_detail.html'
+
+    def form_valid(self, form):
+        # Associate the comment with the current post and user
+        post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        form.instance.post = post
+        form.instance.author = self.request.user
+        form.save()
+        messages.success(self.request, 'Comment added successfully!')
+        return redirect('post-detail', pk=post.pk)  # Redirect to the post detail view
+    
+
+class CommentUpdateView(UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Comment updated successfully!')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        # Redirect to the post detail view after updating the comment
+        return self.object.post.get_absolute_url()
+    
+
+class CommentDeleteView(DeleteView):
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'  # Create a confirmation template for deleting comments
+    context_object_name = 'comment'
+
+    def get_success_url(self):
+        # After successful deletion, redirect to the post's detail page
+        return reverse_lazy('post-detail', kwargs={'pk': self.object.post.pk})
