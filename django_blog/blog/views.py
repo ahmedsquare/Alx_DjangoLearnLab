@@ -7,6 +7,9 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post
+from .forms import CommentForm
+from .models import Comment
+from django.shortcuts import get_object_or_404
 
 def home(request):
     return render(request, 'blog/base.html')  # Ensure 'blog/home.html' exists
@@ -48,21 +51,43 @@ class PostListView(ListView):
     context_object_name = 'posts'
     ordering = ['-published_date']  # Show latest posts first
 
-# Display a single post
 class PostDetailView(DetailView):
     model = Post
-    template_name = 'blog/post_detail.html'  # Ensure this template exists
+    template_name = 'blog/post_detail.html'
+    context_object_name = 'post'
 
-# Create a new post
-class PostCreateView(LoginRequiredMixin, CreateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = self.get_object()
+        context['comment_form'] = CommentForm()  # Initialize the comment form
+        context['comments'] = post.comments.all()  # Fetch all comments related to the post
+        return context
+
+    def post(self, request, *args, **kwargs):
+        post = self.get_object()
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+            messages.success(request, 'Comment added successfully!')
+            return redirect('post_detail', pk=post.pk)  # Ensure this matches the URL name
+        messages.error(request, 'There was an error with your comment submission.')
+        return redirect('post_detail', pk=post.pk)
+    # Create a new post
+class PostCreateView(CreateView):
     model = Post
+    template_name = 'blog/post_form.html'
     fields = ['title', 'content']
-    template_name = 'blog/post_form.html'  # Ensure this template exists
 
     def form_valid(self, form):
         form.instance.author = self.request.user  # Set author to the logged-in user
         return super().form_valid(form)
 
+    def get_success_url(self):
+        # Make sure the name is 'post-detail'
+        return reverse_lazy('post-detail', kwargs={'pk': self.object.pk})
 # Update a post (only by the author)
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
@@ -81,8 +106,40 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'blog/post_confirm_delete.html'
-    success_url = reverse_lazy('posts')  # Redirect to post list after deletion
+    success_url = reverse_lazy('post-list')  # Redirect to post list after deletion
 
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author  # Ensure only the author can delete
+
+
+
+@login_required
+def edit_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.user != comment.author:
+        messages.error(request, "You are not authorized to edit this comment.")
+        return redirect('post_detail', pk=comment.post.pk)
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Comment updated successfully!')
+            return redirect('post_detail', pk=comment.post.pk)
+    else:
+        form = CommentForm(instance=comment)
+
+    return render(request, 'blog/edit_comment.html', {'form': form})
+
+@login_required
+def delete_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.user != comment.author:
+        messages.error(request, "You are not authorized to delete this comment.")
+        return redirect('post_detail', pk=comment.post.pk)
+
+    post_pk = comment.post.pk
+    comment.delete()
+    messages.success(request, 'Comment deleted successfully!')
+    return redirect('post_detail', pk=post_pk)
